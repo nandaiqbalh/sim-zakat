@@ -226,25 +226,27 @@ export default function AccountPageClient({ initialUser }) {
         subtitle="Kelola informasi profil dan keamanan akun Anda."
       />
 
-      {/* Profile card */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-2">
-          <UserCircle className="w-4 h-4 text-green-700" />
-          <h2 className="text-sm font-semibold text-gray-800">Informasi Profil</h2>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Profile card */}
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-2">
+            <UserCircle className="w-4 h-4 text-green-700" />
+            <h2 className="text-sm font-semibold text-gray-800">Informasi Profil</h2>
+          </div>
+          <div className="p-6">
+            <ProfileSection initialUser={initialUser} />
+          </div>
         </div>
-        <div className="p-6">
-          <ProfileSection initialUser={initialUser} />
-        </div>
-      </div>
 
-      {/* Password card */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-2">
-          <Lock className="w-4 h-4 text-green-700" />
-          <h2 className="text-sm font-semibold text-gray-800">Ubah Password</h2>
-        </div>
-        <div className="p-6">
-          <PasswordSection />
+        {/* Password card */}
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-2">
+            <Lock className="w-4 h-4 text-green-700" />
+            <h2 className="text-sm font-semibold text-gray-800">Ubah Password</h2>
+          </div>
+          <div className="p-6">
+            <PasswordSection />
+          </div>
         </div>
       </div>
     </div>

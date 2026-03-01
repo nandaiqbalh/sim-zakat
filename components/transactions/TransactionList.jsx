@@ -23,21 +23,32 @@ function fmtDate(d) {
   });
 }
 
-export default function TransactionList({ transactions = [] }) {
+export default function TransactionList({ transactions = [], page = 1, total = 0, limit = 10 }) {
+  const lastPage = Math.max(1, Math.ceil(total / limit));
+  const pathname = typeof window !== "undefined" ? window.location.pathname : "";
+  const search = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : new URLSearchParams();
+
+  const buildLink = (newPage) => {
+    const params = new URLSearchParams(search.toString());
+    if (newPage && newPage > 1) params.set("page", newPage);
+    else params.delete("page");
+    return `${pathname}?${params.toString()}`;
+  };
+
   return (
     <ZakatCard>
       <h3 className="text-base font-semibold text-gray-800 flex items-center gap-2 mb-4">
         <ClipboardList className="w-4 h-4 text-green-700" />
         Transaksi Terbaru
         <span className="ml-auto text-xs font-normal text-gray-400">
-          {transactions.length} entri
+          {total} entri
         </span>
       </h3>
 
       {transactions.length === 0 ? (
         <ZakatEmptyState
           title="Belum ada transaksi"
-          description="Catat zakat masuk pertama menggunakan formulir di sebelah kiri."
+          description="Gunakan tombol Tambah Transaksi untuk mulai mencatat."
         />
       ) : (
         <ZakatTable headers={["Tanggal", "Muzakki", "Jenis", "Jumlah", "Petugas"]}>
@@ -64,6 +75,25 @@ export default function TransactionList({ transactions = [] }) {
             </ZakatTr>
           ))}
         </ZakatTable>
+      )}
+      {total > limit && (
+        <div className="mt-4 flex justify-between text-sm">
+          <a
+            href={buildLink(page - 1)}
+            className={`px-3 py-1 rounded ${page > 1 ? "bg-green-100 text-green-700" : "text-gray-400"}`}
+          >
+            Sebelumnya
+          </a>
+          <span className="text-gray-500">
+            {page} / {lastPage}
+          </span>
+          <a
+            href={buildLink(page + 1)}
+            className={`px-3 py-1 rounded ${page < lastPage ? "bg-green-100 text-green-700" : "text-gray-400"}`}
+          >
+            Berikutnya
+          </a>
+        </div>
       )}
     </ZakatCard>
   );

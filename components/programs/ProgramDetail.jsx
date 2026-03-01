@@ -236,9 +236,25 @@ export default function ProgramDetail({ program }) {
                 ) : grouped.length === 0 ? (
                     <p className="text-sm text-gray-500 text-center py-6">Tidak ada data sesuai filter.</p>
                     ) : (
-                            <ZakatTable headers={["Penerima", "Wilayah", "Kategori", "Tipe", "Jumlah", "Status", "Ringkasan"]}>
-                                {grouped.map((g) => (
+                            <ZakatTable headers={["Status","Penerima", "Wilayah", "Kategori", "Tipe", "Jumlah", "Ringkasan"]}>
+                                {grouped.map((g) => {
+                                    let statusLabel="";
+                                    let statusVariant="gray";
+                                    if (g.pending && g.distributed) {
+                                        statusLabel="Campuran";
+                                        statusVariant="amber";
+                                    } else if (g.distributed) {
+                                        statusLabel="Terdistribusi";
+                                        statusVariant="green";
+                                    } else {
+                                        statusLabel="Menunggu";
+                                        statusVariant="amber";
+                                    }
+                                    return (
                                     <ZakatTr key={g.mustahik.id}>
+                                        <ZakatTd>
+                                            <ZakatBadge label={statusLabel} variant={statusVariant} />
+                                        </ZakatTd>
                                         <ZakatTd className="font-medium">{g.mustahik.name}</ZakatTd>
                                 <ZakatTd className="text-gray-500 text-xs">
                                     {g.mustahik.wilayah ? capitalize(g.mustahik.wilayah.name) : "—"}
@@ -255,20 +271,13 @@ export default function ProgramDetail({ program }) {
                                     {g.cash > 0 && g.rice > 0 && <br />}
                                     {g.rice > 0 && `${g.rice.toFixed(2)} kg`}
                                 </ZakatTd>
-                                <ZakatTd>
-                                    {g.pending > 0 && g.distributed > 0
-                                        ? "Campuran"
-                                        : g.distributed > 0
-                                            ? "Terdistribusi"
-                                            : "Menunggu"}
-                                </ZakatTd>
                                 <ZakatTd className="text-xs text-gray-500">
                                     {g.distributed > 0 && `${g.distributed} selesai`}
                                     {g.distributed > 0 && g.pending > 0 && ", "}
                                     {g.pending > 0 && `${g.pending} menunggu`}
                                 </ZakatTd>
                             </ZakatTr>
-                        ))}
+                        )})}
                     </ZakatTable>
                 )}
             </ZakatCard>

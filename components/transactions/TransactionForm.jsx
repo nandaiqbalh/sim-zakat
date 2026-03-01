@@ -17,12 +17,17 @@ const ASSET_TYPES = [
 
 const INITIAL = { muzakkiName: "", assetType: "CASH", amount: "", note: "" };
 
-export default function TransactionForm() {
+export default function TransactionForm({ onSuccess, redirectTo }) {
   const router = useRouter();
   const [form, setForm] = useState(INITIAL);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const handleSuccess = () => {
+    if (typeof onSuccess === "function") return onSuccess();
+    if (redirectTo) return router.push(redirectTo);
+    router.refresh();
+  }
   const set = (field) => (e) =>
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
 
@@ -41,7 +46,7 @@ export default function TransactionForm() {
     if (res.success) {
       toast.success("Transaksi berhasil dicatat.");
       setForm(INITIAL);
-      router.refresh();
+      handleSuccess();
     } else {
       setError(res.message);
       toast.error(res.message);

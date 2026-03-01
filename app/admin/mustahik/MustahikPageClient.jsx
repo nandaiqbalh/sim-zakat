@@ -6,14 +6,14 @@ import ZakatButton from "@/components/zakat/ZakatButton";
 import MustahikTable from "@/components/mustahik/MustahikTable";
 import MustahikFormDialog from "@/components/mustahik/MustahikFormDialog";
 
-export default function MustahikPageClient({ mustahik }) {
+export default function MustahikPageClient({ mustahik, wilayahOptions = [] }) {
   const [dialog, setDialog] = useState({ open: false, mustahik: null });
 
   return (
     <>
       <div className="flex justify-end mb-4">
         <ZakatButton onClick={() => setDialog({ open: true, mustahik: null })}>
-          + Add Mustahik
+                  + Tambah Mustahik
         </ZakatButton>
       </div>
 
@@ -25,6 +25,7 @@ export default function MustahikPageClient({ mustahik }) {
       <MustahikFormDialog
         open={dialog.open}
         mustahik={dialog.mustahik}
+              wilayahOptions={wilayahOptions}
         onClose={() => setDialog({ open: false, mustahik: null })}
       />
     </>

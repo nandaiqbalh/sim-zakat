@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import { findMosqueByUserId } from "@/lib/repositories/mosque.repository";
 import { getMustahikByMosque } from "@/lib/repositories/mustahik.repository";
+import { getWilayahByMosque } from "@/lib/repositories/wilayah.repository";
 import ZakatPageHeader from "@/components/zakat/ZakatPageHeader";
 import MustahikPageClient from "./MustahikPageClient";
 import Link from "next/link";
@@ -24,8 +25,12 @@ export default async function MustahikPage() {
     );
   }
 
-  const mustahikRes = await getMustahikByMosque({ mosqueId: mosqueRes.data.id });
-  const mustahik    = mustahikRes.data ?? [];
+    const [mustahikRes, wilayahRes] = await Promise.all([
+        getMustahikByMosque({ mosqueId: mosqueRes.data.id }),
+        getWilayahByMosque(mosqueRes.data.id),
+    ]);
+    const mustahik = mustahikRes.data ?? [];
+    const wilayah = wilayahRes.data ?? [];
 
   const activeCount   = mustahik.filter((m) => m.isActive).length;
   const inactiveCount = mustahik.length - activeCount;
@@ -50,7 +55,7 @@ export default async function MustahikPage() {
         </div>
       </div>
 
-      <MustahikPageClient mustahik={mustahik} />
+          <MustahikPageClient mustahik={mustahik} wilayahOptions={wilayah} />
     </div>
   );
 }

@@ -61,15 +61,17 @@ export default function MustahikTable({ mustahik, onEdit }) {
 
   return (
     <>
-      <ZakatTable headers={["Nama", "Kategori", "Alamat", "Nomor HP", "Status", "Aksi"]}>
+          <ZakatTable headers={["Nama", "Kategori", "Wilayah", "Alamat", "Status", "Aksi"]}>
         {mustahik.map((m) => (
           <ZakatTr key={m.id}>
             <ZakatTd className="font-medium">{m.name}</ZakatTd>
             <ZakatTd>
               <ZakatBadge category={m.category} />
             </ZakatTd>
-            <ZakatTd className="text-gray-500 max-w-[200px] truncate">{m.address || "—"}</ZakatTd>
-            <ZakatTd className="text-gray-500">{m.phone || "—"}</ZakatTd>
+                <ZakatTd className="text-gray-500 text-xs">
+                    {m.wilayah ? m.wilayah.name.charAt(0).toUpperCase() + m.wilayah.name.slice(1) : "—"}
+                </ZakatTd>
+                <ZakatTd className="text-gray-500 max-w-[200px] truncate">{m.address || "—"}</ZakatTd>
             <ZakatTd>
               <ZakatBadge
                 label={m.isActive ? "Aktif" : "Tidak aktif"}

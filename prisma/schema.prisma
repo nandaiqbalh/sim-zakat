@@ -51,6 +51,7 @@ model Mosque {
   zakatIn    ZakatTransaction[]
   programs   DistributionProgram[]
   conversions AssetConversion[]
+  wilayah    Wilayah[]
 }
 
 model MosqueUser {
@@ -68,13 +69,15 @@ model MosqueUser {
 model Mustahik {
   id        String @id @default(cuid())
   mosqueId  String
+  wilayahId String?
   name      String
   address   String?
   phone     String?
   category  MustahikCategory
   isActive  Boolean @default(true)
 
-  mosque Mosque @relation(fields: [mosqueId], references: [id])
+  mosque   Mosque   @relation(fields: [mosqueId], references: [id])
+  wilayah  Wilayah? @relation(fields: [wilayahId], references: [id])
   distributions DistributionItem[]
 }
 
@@ -87,6 +90,18 @@ model Muzakki {
 
   mosque Mosque @relation(fields: [mosqueId], references: [id])
   transactions ZakatTransaction[]
+}
+
+model Wilayah {
+  id        String   @id @default(cuid())
+  mosqueId  String
+  name      String   // stored as lowercase
+  createdAt DateTime @default(now())
+
+  mosque   Mosque     @relation(fields: [mosqueId], references: [id], onDelete: Cascade)
+  mustahik Mustahik[]
+
+  @@unique([mosqueId, name])
 }
 
 model ZakatTransaction {

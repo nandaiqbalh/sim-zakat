@@ -25,19 +25,19 @@ export default function LoginForm() {
         formState: { errors, isSubmitting },
     } = useForm({
         resolver: zodResolver(loginSchema),
-        defaultValues: { identifier: "", password: "" },
+        defaultValues: { email: "", password: "" },
     });
 
     const onSubmit = async (values) => {
         const res = await signIn("credentials", {
             redirect: false,
-            identifier: values.identifier,
+            email: values.email,
             password: values.password,
         });
 
         if (res?.error) {
-            const message = "Incorrect email/username or password. Please check your credentials.";
-            setDialog({ open: true, title: "Login Failed", description: message });
+            const message = "Email atau password salah. Periksa kembali kredensial Anda.";
+            setDialog({ open: true, title: "Login Gagal", description: message });
             toast.error(message);
             return;
         }
@@ -46,7 +46,6 @@ export default function LoginForm() {
         const session = await sessionRes.json();
         const role = session?.user?.role;
 
-        // navigate with a flag so destination page can show a toast
         router.push(
             role === "ADMIN" ? "/admin/dashboard?toast=welcome" : "/?toast=welcome"
         );
@@ -62,13 +61,13 @@ export default function LoginForm() {
             />
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4" noValidate>
                 <AuthInput
-                    id="identifier"
-                    label="Email or Username"
-                    type="text"
-                    placeholder="you@example.com or your_username"
-                    error={errors.identifier?.message}
-                    autoComplete="username"
-                    {...register("identifier")}
+                    id="email"
+                    label="Email"
+                    type="email"
+                    placeholder="email@contoh.com"
+                    error={errors.email?.message}
+                    autoComplete="email"
+                    {...register("email")}
                 />
                 <AuthInput
                     id="password"
@@ -82,20 +81,14 @@ export default function LoginForm() {
                 <div className="flex justify-end">
                     <Link
                         href="/forgot-password"
-                        className="text-neutral-500 text-[11px] tracking-wide hover:text-neutral-900 transition-colors"
+                        className="text-gray-400 text-xs hover:text-green-700 transition-colors"
                     >
-                        Forgot password?
+                        Lupa password?
                     </Link>
                 </div>
-                <AuthButton loading={isSubmitting}>Login</AuthButton>
+                <AuthButton loading={isSubmitting}>Masuk</AuthButton>
                 <AuthDivider />
                 <GoogleButton callbackUrl="/" />
-                <p className="text-center text-neutral-600 text-[11px] tracking-wide">
-                    Don't have an account?{" "}
-                    <Link href="/register" className="text-neutral-800 font-medium hover:text-neutral-950 transition-colors">
-                        Register Now
-                    </Link>
-                </p>
             </form>
         </>
     );

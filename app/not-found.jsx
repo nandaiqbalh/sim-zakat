@@ -13,17 +13,17 @@ export default function NotFound() {
     <main className="min-h-screen flex flex-col items-center justify-center px-4 text-center bg-white">
 
       <h1 className="text-6xl font-bold text-gray-800 mb-4">404</h1>
-      <p className="text-lg text-gray-600 mb-6">Page not found</p>
+      <p className="text-lg text-gray-600 mb-6">Halaman tidak ditemukan</p>
       <p className="text-sm text-gray-500 mb-8 max-w-xs">
-        The resource you are looking for might have been removed, had its name changed, or is temporarily unavailable.
+        Halaman yang Anda cari mungkin telah dihapus, namanya diubah, atau sementara tidak tersedia.
       </p>
 
       <div className="flex flex-wrap gap-4 justify-center">
         <Link
           href="/"
-          className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+          className="px-6 py-2 bg-green-700 text-white rounded hover:bg-green-800 transition"
         >
-          Go to Homepage
+          Kembali ke Beranda
         </Link>
         <BackButton />
       </div>

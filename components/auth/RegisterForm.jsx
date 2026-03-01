@@ -4,7 +4,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { useState } from "react";
 import { toast } from "../ui/sonner";
 import { registerSchema } from "@/lib/validations/auth.schema";
@@ -14,6 +13,7 @@ import AuthDivider from "./AuthDivider";
 import GoogleButton from "./GoogleButton";
 import ErrorDialog from "@/components/ui/error-dialog";
 import StrengthBar from "@/components/ui/strength-bar";
+import Link from "next/link";
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -29,7 +29,6 @@ export default function RegisterForm() {
     resolver: zodResolver(registerSchema),
     defaultValues: {
       name: "",
-      username: "",
       phone: "",
       email: "",
       password: "",
@@ -46,7 +45,6 @@ export default function RegisterForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: values.name,
-          username: values.username,
           phone: values.phone,
           email: values.email,
           password: values.password,
@@ -56,20 +54,17 @@ export default function RegisterForm() {
       const data = await res.json();
 
       if (!res.ok || data.success === false) {
-        const msg = data.message || "Registration failed. Please try again later.";
-        setDialog({ open: true, title: "Registration Failed", description: msg });
+        const msg = data.message || "Pendaftaran gagal. Silakan coba lagi.";
+        setDialog({ open: true, title: "Pendaftaran Gagal", description: msg });
         toast.error(msg);
 
-        // Map server error back to the relevant field
-        if (/phone/i.test(msg)) setError("phone", { message: msg });
+        if (/phone|hp|telepon/i.test(msg)) setError("phone", { message: msg });
         if (/email/i.test(msg)) setError("email", { message: msg });
-        if (/username/i.test(msg)) setError("username", { message: msg });
       } else {
-        // redirect to login with flag; login page will display the toast
         router.push("/login?registered=1");
       }
     } catch {
-      setDialog({ open: true, title: "Server Error", description: "An error occurred. Please try again." });
+      setDialog({ open: true, title: "Kesalahan Server", description: "Terjadi kesalahan. Silakan coba lagi." });
     }
   };
 
@@ -90,14 +85,6 @@ export default function RegisterForm() {
             error={errors.name?.message}
             autoComplete="name"
             {...register("name")}
-          />
-          <AuthInput
-            id="username"
-            label="Username"
-            placeholder="yourusername"
-            error={errors.username?.message}
-            autoComplete="username"
-            {...register("username")}
           />
         </div>
         <AuthInput

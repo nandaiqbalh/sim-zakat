@@ -13,10 +13,7 @@ export default function RootLayout({ children }) {
     <html lang="en" className="light">
       <body className={`${bebasNeue.variable} ${dmSans.variable} antialiased`}>
         <ClientLayout>
-          {/* Header navigation menu (hidden on admin pages) */}
-          <ConditionalHeader>
-            {children}
-          </ConditionalHeader>
+          {children}
         </ClientLayout>
       </body>
     </html>

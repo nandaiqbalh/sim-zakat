@@ -1,6 +1,6 @@
 // components/auth/AuthDivider.jsx
 
-export default function AuthDivider({ label = "Or" }) {
+export default function AuthDivider({ label = "atau" }) {
   return (
     <div className="flex items-center gap-2 my-4">
       <div className="flex-1 h-px bg-gray-300" />

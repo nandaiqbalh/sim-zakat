@@ -105,7 +105,7 @@ function SidebarContent({ onClose, mosqueRole, userName }) {
       </nav>
 
       {/* Footer */}
-      <div className="px-3 py-3 border-t border-gray-100 space-y-0.5">
+      <div className="px-3 py-3 border-t border-gray-100 space-y-2">
         <Link
           href="/admin/account"
           onClick={onClose}
@@ -116,7 +116,7 @@ function SidebarContent({ onClose, mosqueRole, userName }) {
         </Link>
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
-          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-red-50 hover:text-red-700 transition-colors"
+          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-red-50 hover:text-red-700 transition-colors cursor-pointer"
         >
           <LogOut className="w-4 h-4 shrink-0" />
           Keluar

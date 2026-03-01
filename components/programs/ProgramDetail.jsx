@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { toast } from "sonner";
-import { Trash2, Clock, MapPin } from "lucide-react";
+import { Trash2, Clock, MapPin, Check } from "lucide-react";
 import ZakatCard from "@/components/zakat/ZakatCard";
 import ZakatTable, { ZakatTr, ZakatTd } from "@/components/zakat/ZakatTable";
 import ZakatBadge from "@/components/zakat/ZakatBadge";
@@ -236,7 +236,7 @@ export default function ProgramDetail({ program }) {
                 ) : grouped.length === 0 ? (
                     <p className="text-sm text-gray-500 text-center py-6">Tidak ada data sesuai filter.</p>
                     ) : (
-                            <ZakatTable headers={["Status","Penerima", "Wilayah", "Kategori", "Tipe", "Jumlah", "Ringkasan"]}>
+                            <ZakatTable headers={["Status","Penerima", "Wilayah", "Kategori", "Tipe", "Jumlah", "Ringkasan", "Aksi"]}>
                                 {grouped.map((g) => {
                                     let statusLabel="";
                                     let statusVariant="gray";
@@ -275,6 +275,36 @@ export default function ProgramDetail({ program }) {
                                     {g.distributed > 0 && `${g.distributed} selesai`}
                                     {g.distributed > 0 && g.pending > 0 && ", "}
                                     {g.pending > 0 && `${g.pending} menunggu`}
+                                </ZakatTd>
+                                {/* aksi: distribusikan/hapus */}
+                                <ZakatTd className="flex gap-2">
+                                    {g.pending > 0 && (
+                                        <button
+                                            className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800 hover:bg-green-200 cursor-pointer"
+                                            title="Distribusikan item"
+                                            onClick={() => {
+                                                // pick first pending item for simplicity
+                                                const item = g.items.find((i) => i.status === "PENDING");
+                                                setConfirmDistribute({ open: true, item });
+                                            }}
+                                        >
+                                            <Check className="w-4 h-4" />
+                                            <span>Distribusikan</span>
+                                        </button>
+                                    )}
+                                    {g.pending > 0 && (
+                                        <button
+                                            className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800 hover:bg-red-200 cursor-pointer"
+                                            title="Hapus item"
+                                            onClick={() => {
+                                                const item = g.items.find((i) => i.status === "PENDING");
+                                                setConfirmDelete({ open: true, item });
+                                            }}
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                            <span>Hapus</span>
+                                        </button>
+                                    )}
                                 </ZakatTd>
                             </ZakatTr>
                         )})}

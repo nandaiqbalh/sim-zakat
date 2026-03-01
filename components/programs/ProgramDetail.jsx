@@ -66,6 +66,21 @@ export default function ProgramDetail({ program }) {
   const pending  = items.filter((i) => i.status === "PENDING");
   const done     = items.filter((i) => i.status === "DISTRIBUTED");
 
+    // kelompokkan per mustahik
+    const grouped = Object.values(
+        items.reduce((acc, item) => {
+            const id = item.mustahik.id;
+            if (!acc[id]) {
+                acc[id] = { mustahik: item.mustahik, cash: 0, rice: 0, pending: 0, distributed: 0 };
+            }
+            if (item.assetType === "CASH") acc[id].cash += Number(item.amount);
+            else acc[id].rice += Number(item.amount);
+            if (item.status === "PENDING") acc[id].pending++;
+            else if (item.status === "DISTRIBUTED") acc[id].distributed++;
+            return acc;
+        }, {})
+    );
+
   return (
     <>
       {/* Summary */}
@@ -96,65 +111,38 @@ export default function ProgramDetail({ program }) {
           />
         ) : (
           <ZakatTable
-            headers={["Penerima", "Kategori", "Tipe", "Jumlah", "Status", "Tgl Distribusi", "Petugas", "Aksi"]}
+                          headers={["Penerima", "Kategori", "Tipe", "Jumlah", "Status", "Ringkasan"]}
           >
-            {items.map((item) => (
-              <ZakatTr key={item.id}>
-                <ZakatTd className="font-medium">{item.mustahik.name}</ZakatTd>
+                          {grouped.map((g) => (
+                              <ZakatTr key={g.mustahik.id}>
+                                  <ZakatTd className="font-medium">{g.mustahik.name}</ZakatTd>
                 <ZakatTd>
-                  <ZakatBadge category={item.mustahik.category} />
+                                      <ZakatBadge category={g.mustahik.category} />
                 </ZakatTd>
-                <ZakatTd>
-                  <ZakatBadge
-                    label={item.assetType === "CASH" ? "Uang" : "Beras"}
-                    variant={item.assetType === "CASH" ? "green" : "amber"}
-                  />
+                                  <ZakatTd className="flex gap-1">
+                                      {g.cash > 0 && (
+                                          <ZakatBadge label="Uang" variant="green" />
+                                      )}
+                                      {g.rice > 0 && (
+                                          <ZakatBadge label="Beras" variant="amber" />
+                                      )}
                 </ZakatTd>
                 <ZakatTd className="font-semibold text-green-700">
-                  {item.assetType === "CASH"
-                    ? fmt(item.amount)
-                    : `${Number(item.amount).toFixed(2)} kg`}
+                                      {g.cash > 0 && fmt(g.cash)}
+                                      {g.cash > 0 && g.rice > 0 && <br />}
+                                      {g.rice > 0 && `${g.rice.toFixed(2)} kg`}
                 </ZakatTd>
                 <ZakatTd>
-                  {item.status === "DISTRIBUTED" ? (
-                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-green-700">
-                      <CheckCheck className="w-3.5 h-3.5" /> Selesai
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-600">
-                      <Clock className="w-3.5 h-3.5" /> Menunggu
-                    </span>
-                  )}
+                                      {g.pending && g.distributed
+                                          ? "Campuran"
+                                          : g.distributed
+                                              ? "Terdistibusi"
+                                              : "Menunggu"}
                 </ZakatTd>
-                <ZakatTd className="text-xs text-gray-500">
-                  {item.distributedAt ? fmtDate(item.distributedAt) : "—"}
-                </ZakatTd>
-                <ZakatTd className="text-xs text-gray-500">
-                  {item.distributor?.name ?? "—"}
-                </ZakatTd>
-                <ZakatTd>
-                  <div className="flex items-center gap-1">
-                    {item.status === "PENDING" && (
-                      <button
-                        onClick={() => setConfirmDistribute({ open: true, item })}
-                        disabled={busy[item.id]}
-                        className="p-1.5 text-green-600 hover:text-green-800 hover:bg-green-50 rounded transition"
-                        title="Tandai sudah didistribusikan"
-                      >
-                        <CheckCircle2 className="w-4 h-4" />
-                      </button>
-                    )}
-                    {item.status === "PENDING" && (
-                      <button
-                        onClick={() => setConfirmDelete({ open: true, item })}
-                        disabled={busy[item.id]}
-                        className="p-1.5 text-red-500 hover:text-red-700 hover:bg-red-50 rounded transition"
-                        title="Hapus"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    )}
-                  </div>
+                                  <ZakatTd className="text-xs text-gray-500">
+                                      {g.distributed > 0 && `${g.distributed} selesai`}
+                                      {g.distributed > 0 && g.pending > 0 && ", "}
+                                      {g.pending > 0 && `${g.pending} menunggu`}
                 </ZakatTd>
               </ZakatTr>
             ))}

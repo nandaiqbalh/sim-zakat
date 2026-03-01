@@ -12,7 +12,7 @@ export default function ProgramsPageClient({ programs }) {
   return (
     <>
       <div className="flex justify-end mb-4">
-        <ZakatButton onClick={() => setShowCreate(true)}>+ New Program</ZakatButton>
+              <ZakatButton onClick={() => setShowCreate(true)}>+ Tambah Program</ZakatButton>
       </div>
 
       <ProgramList programs={programs} onCreate={() => setShowCreate(true)} />

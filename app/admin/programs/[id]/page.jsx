@@ -1,9 +1,10 @@
 // app/admin/programs/[id]/page.jsx
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
-import { findMosqueByUserId } from "@/lib/repositories/mosque.repository";
+import { findMosqueByUserId, findMosqueUserByUserId } from "@/lib/repositories/mosque.repository";
 import { getMustahikByMosque } from "@/lib/repositories/mustahik.repository";
 import { getProgramById } from "@/lib/repositories/program.repository";
+import { getZakatBalance } from "@/lib/repositories/transaction.repository";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
@@ -28,8 +29,9 @@ export default async function ProgramDetailPage({ params }) {
 
   const session = await getServerSession(authOptions);
 
-  const [mosqueRes, programRes] = await Promise.all([
+    const [mosqueRes, mosqueUserRes, programRes] = await Promise.all([
     findMosqueByUserId(session.user.id),
+        findMosqueUserByUserId(session.user.id),
     getProgramById(id),
   ]);
 
@@ -72,8 +74,14 @@ export default async function ProgramDetailPage({ params }) {
     );
   }
 
-  const mustahikRes  = await getMustahikByMosque({ mosqueId: mosqueRes.data.id, onlyActive: true });
-  const mustahik     = mustahikRes.data ?? [];
+    const isManager = mosqueUserRes?.data?.role === "MANAGER";
+
+    const [mustahikRes, balanceRes] = await Promise.all([
+        getMustahikByMosque({ mosqueId: mosqueRes.data.id, onlyActive: true }),
+        getZakatBalance(mosqueRes.data.id),
+    ]);
+    const mustahik = mustahikRes.data ?? [];
+    const balance = balanceRes.data ?? {};
 
   const createdAt = new Date(program.createdAt).toLocaleDateString("id-ID", {
     day: "numeric", month: "long", year: "numeric",
@@ -99,7 +107,13 @@ export default async function ProgramDetailPage({ params }) {
         description={`Dibuat oleh ${program.createdBy?.name ?? "—"} · ${createdAt}`}
       />
 
-      <DistributionItemForm programId={id} mustahik={mustahik} />
+          <DistributionItemForm
+              programId={id}
+              mustahik={mustahik}
+              balance={balance}
+              isManager={isManager}
+              existingIds={program.items?.map((i) => i.mustahik.id) ?? []}
+          />
       <ProgramDetail program={program} />
     </div>
   );

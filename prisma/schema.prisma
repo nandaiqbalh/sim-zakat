@@ -1,0 +1,217 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SUPERADMIN
+  ADMIN
+  USER
+}
+
+enum Gender {
+  Male
+  Female
+  Prefer_not_to_say
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String?
+  email     String   @unique
+  password  String?
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+
+  mosqueRoles MosqueUser[]
+  createdTransactions ZakatTransaction[]
+  conversions AssetConversion[]
+  distributions DistributionItem[]
+}
+
+model Mosque {
+  id        String   @id @default(cuid())
+  name      String
+  address   String?
+  createdAt DateTime @default(now())
+
+  users      MosqueUser[]
+  muzakki    Muzakki[]
+  mustahik   Mustahik[]
+  zakatIn    ZakatTransaction[]
+  programs   DistributionProgram[]
+  conversions AssetConversion[]
+}
+
+model MosqueUser {
+  id        String @id @default(cuid())
+  userId    String
+  mosqueId  String
+  role      MosqueRole
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mosque Mosque @relation(fields: [mosqueId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, mosqueId])
+}
+
+model Mustahik {
+  id        String @id @default(cuid())
+  mosqueId  String
+  name      String
+  address   String?
+  phone     String?
+  category  MustahikCategory
+  isActive  Boolean @default(true)
+
+  mosque Mosque @relation(fields: [mosqueId], references: [id])
+  distributions DistributionItem[]
+}
+
+model Muzakki {
+  id        String @id @default(cuid())
+  mosqueId  String
+  name      String
+  phone     String?
+  address   String?
+
+  mosque Mosque @relation(fields: [mosqueId], references: [id])
+  transactions ZakatTransaction[]
+}
+
+model ZakatTransaction {
+  id          String @id @default(cuid())
+  mosqueId    String
+  muzakkiId   String
+
+  assetType   AssetType
+  amount      Decimal
+
+  createdById String
+  note        String?
+  createdAt   DateTime @default(now())
+
+  mosque   Mosque  @relation(fields: [mosqueId], references: [id])
+  muzakki  Muzakki @relation(fields: [muzakkiId], references: [id])
+  createdBy User   @relation(fields: [createdById], references: [id])
+}
+
+model AssetConversion {
+  id          String @id @default(cuid())
+  mosqueId    String
+
+  fromAsset   AssetType
+  toAsset     AssetType
+
+  fromAmount  Decimal
+  toAmount    Decimal
+  rate        Decimal
+
+  createdById String
+  createdAt   DateTime @default(now())
+
+  mosque    Mosque @relation(fields: [mosqueId], references: [id])
+  createdBy User   @relation(fields: [createdById], references: [id])
+}
+
+model DistributionProgram {
+  id          String @id @default(cuid())
+  mosqueId    String
+  name        String
+  totalFund   Decimal?
+  createdById String
+  createdAt   DateTime @default(now())
+
+  mosque Mosque @relation(fields: [mosqueId], references: [id])
+  createdBy User @relation(fields: [createdById], references: [id])
+
+  items DistributionItem[]
+}
+
+model DistributionItem {
+  id            String @id @default(cuid())
+  programId     String
+  mustahikId    String
+  distributorId String
+
+  assetType     AssetType
+  amount        Decimal
+
+  status        DistributionStatus @default(PENDING)
+  distributedAt DateTime?
+
+  program     DistributionProgram @relation(fields: [programId], references: [id])
+  mustahik    Mustahik @relation(fields: [mustahikId], references: [id])
+  distributor User     @relation(fields: [distributorId], references: [id])
+}
+
+enum MustahikCategory {
+  FAKIR
+  MISKIN
+  AMIL
+  MUALAF
+  GHARIM
+  FISABILILLAH
+  IBNU_SABIL
+}
+
+enum AssetType {
+  CASH
+  RICE
+}
+
+enum MosqueRole {
+  MANAGER
+  DISTRIBUTOR
+}
+
+enum DistributionStatus {
+  PENDING
+  DISTRIBUTED
+}
+
+// ----- NextAuth models for Prisma adapter -----
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String? @map("refresh_token")
+  access_token       String? @map("access_token")
+  expires_at         Int?    @map("expires_at")
+  token_type         String? @map("token_type")
+  scope              String?
+  id_token           String? @map("id_token")
+  session_state      String?
+  oauth_token_secret String? @map("oauth_token_secret")
+  oauth_token        String? @map("oauth_token")
+
+  user               User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}

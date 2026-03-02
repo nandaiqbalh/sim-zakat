@@ -115,8 +115,7 @@ export function TablePageSkeleton({ statCount = 3, cols = 5, rows = 8 }) {
   return (
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4">
-        <PageHeaderSkeleton />
-        <Skeleton className="h-9 w-36 rounded-xl shrink-0" />
+              <PageHeaderSkeleton />
       </div>
       {/* stat row */}
       {statCount > 0 && (

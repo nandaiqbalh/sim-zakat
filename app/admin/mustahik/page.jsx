@@ -33,10 +33,11 @@ export default async function MustahikPage({ searchParams }) {
   const mosqueRes = await findMosqueByUserId(session.user.id);
 
   // read filters from URL (optional)
-  const page = parseInt(searchParams?.page || "1", 10) || 1;
-  const filterWilayah = searchParams?.wilayah || "";
-  const name = searchParams?.name || "";
-  const category = searchParams?.category || "";
+  const sp = await searchParams;
+  const page = parseInt(sp?.page || "1", 10) || 1;
+  const filterWilayah = sp?.wilayah || "";
+  const name = sp?.name || "";
+  const category = sp?.category || "";
 
   const [mustahikRes, wilayahRes] = await Promise.all([
     getMustahikByMosque({

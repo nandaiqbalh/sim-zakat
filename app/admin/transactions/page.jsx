@@ -40,9 +40,10 @@ export default async function TransactionsPage({ searchParams }) {
     return <Unauthorized message="Anda tidak memiliki akses ke halaman transaksi." />;
   }
 
-  const page      = parseInt(searchParams.page || "1", 10) || 1;
-  const search    = searchParams.search || "";
-  const assetType = searchParams.assetType || "";
+  const sp = await searchParams;
+  const page = parseInt(sp.page || "1", 10) || 1;
+  const search = sp.search || "";
+  const assetType = sp.assetType || "";
 
   const [balanceRes, txRes] = await Promise.all([
     getZakatBalance(mosque.id),

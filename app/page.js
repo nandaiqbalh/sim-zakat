@@ -342,7 +342,7 @@ export default async function LandingPage() {
               </div>
               <div>
                 <p className="text-sm font-bold text-green-800">SIM Zakat</p>
-                <p className="text-xs text-gray-400">Open Source · MIT License</p>
+                <p className="text-xs text-gray-400">Open Source</p>
               </div>
             </div>
             <nav className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-gray-500">

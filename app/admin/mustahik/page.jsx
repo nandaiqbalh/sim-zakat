@@ -11,7 +11,7 @@ import Unauthorized from "@/components/ui/Unauthorized";
 
 export const metadata = { title: "Mustahik — SIM Zakat" };
 
-export default async function MustahikPage() {
+export default async function MustahikPage({ searchParams }) {
   const session   = await getServerSession(authOptions);
   const userMosqueRes = await findMosqueUserByUserId(session.user.id);
 
@@ -32,37 +32,30 @@ export default async function MustahikPage() {
 
   const mosqueRes = await findMosqueByUserId(session.user.id);
 
-    const [mustahikRes, wilayahRes] = await Promise.all([
-        getMustahikByMosque({ mosqueId: mosqueRes.data.id }),
-        getWilayahByMosque(mosqueRes.data.id),
-    ]);
-    const mustahik = mustahikRes.data ?? [];
-    const wilayah = wilayahRes.data ?? [];
+  // read filters from URL (optional)
+  const page = parseInt(searchParams?.page || "1", 10) || 1;
+  const filterWilayah = searchParams?.wilayah || "";
+  const name = searchParams?.name || "";
+  const category = searchParams?.category || "";
 
-  const activeCount   = mustahik.filter((m) => m.isActive).length;
-  const inactiveCount = mustahik.length - activeCount;
+  const [mustahikRes, wilayahRes] = await Promise.all([
+    getMustahikByMosque({
+      mosqueId: mosqueRes.data.id,
+      page,
+      limit: 10,
+      wilayah: filterWilayah,
+      name,
+      category,
+    }),
+    getWilayahByMosque(mosqueRes.data.id),
+  ]);
+  const initialData = mustahikRes.data ?? { mustahiks: [], total: 0, page: 1, limit: 10, wilayah: filterWilayah, name, category };
+  const wilayahOptions = wilayahRes.data ?? [];
 
   return (
     <div>
       <ZakatPageHeader title="Data Mustahik" description="Kelola penerima zakat." />
-
-      {/* Stats row */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 text-center">
-          <p className="text-2xl font-bold text-gray-900">{mustahik.length}</p>
-          <p className="text-xs text-gray-500 mt-1">Total</p>
-        </div>
-        <div className="bg-white rounded-xl border border-green-200 shadow-sm p-5 text-center">
-          <p className="text-2xl font-bold text-green-700">{activeCount}</p>
-          <p className="text-xs text-gray-500 mt-1">Aktif</p>
-        </div>
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 text-center">
-          <p className="text-2xl font-bold text-gray-400">{inactiveCount}</p>
-          <p className="text-xs text-gray-500 mt-1">Tidak aktif</p>
-        </div>
-      </div>
-
-          <MustahikPageClient mustahik={mustahik} wilayahOptions={wilayah} />
+      <MustahikPageClient initialData={initialData} wilayahOptions={wilayahOptions} />
     </div>
   );
 }

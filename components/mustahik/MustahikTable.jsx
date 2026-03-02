@@ -61,9 +61,10 @@ export default function MustahikTable({ mustahik, onEdit }) {
 
   return (
     <>
-          <ZakatTable headers={["Nama", "Kategori", "Wilayah", "Alamat", "Status", "Aksi"]}>
-        {mustahik.map((m) => (
+      <ZakatTable headers={["No", "Nama", "Kategori", "Wilayah", "Alamat", "Status", "Aksi"]}>
+        {mustahik.map((m, idx) => (
           <ZakatTr key={m.id}>
+            <ZakatTd className="text-xs text-gray-500">{idx + 1}</ZakatTd>
             <ZakatTd className="font-medium">{m.name}</ZakatTd>
             <ZakatTd>
               <ZakatBadge category={m.category} />

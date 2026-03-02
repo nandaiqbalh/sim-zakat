@@ -28,6 +28,7 @@ const CATEGORIES = [
 const BLANK = { name: "", address: "", phone: "", category: "FAKIR", isActive: true, wilayahName: "" };
 
 export default function MustahikFormDialog({ open, onClose, mustahik = null, wilayahOptions = [] }) {
+    // onClose callback receives optional saved mustahik obj when form submits successfully
     const router = useRouter();
     const isEdit = !!mustahik;
     const [form, setForm] = useState(BLANK);
@@ -68,8 +69,8 @@ export default function MustahikFormDialog({ open, onClose, mustahik = null, wil
 
         if (res.success) {
             toast.success(isEdit ? "Data mustahik berhasil diperbarui." : "Mustahik berhasil ditambahkan.");
-            onClose();
-            router.refresh();
+            // pass back the saved record so parent can update list
+            onClose(res.data);
         } else {
             setError(res.message);
         }

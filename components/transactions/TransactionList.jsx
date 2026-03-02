@@ -44,6 +44,7 @@ export default function TransactionList({
   const [currTotal, setCurrTotal] = useState(total);
   const [currTransactions, setCurrTransactions] = useState(transactions);
   const lastPage = Math.max(1, Math.ceil(currTotal / limit));
+  const baseIndex = (currPage - 1) * limit;
   // build params from props (supplied by server) rather than window
   const baseParams = new URLSearchParams();
   if (initialSearch) baseParams.set("search", initialSearch);
@@ -103,9 +104,12 @@ export default function TransactionList({
           description="Gunakan tombol Tambah Transaksi untuk mulai mencatat."
         />
       ) : (
-          <ZakatTable headers={["Tanggal", "Muzakki", "Jenis", "Jumlah", "Catatan", "Petugas", "Aksi"]}>
-            {currTransactions.map((tx) => (
+          <ZakatTable headers={["No", "Tanggal", "Muzakki", "Jenis", "Jumlah", "Catatan", "Petugas", "Aksi"]}>
+            {currTransactions.map((tx, idx) => (
             <ZakatTr key={tx.id}>
+                <ZakatTd className="text-xs text-gray-500">
+                  {baseIndex + idx + 1}
+                </ZakatTd>
               <ZakatTd className="whitespace-nowrap text-xs text-gray-500">
                 {fmtDate(tx.createdAt)}
               </ZakatTd>

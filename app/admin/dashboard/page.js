@@ -11,7 +11,8 @@ import Link from "next/link";
 export const metadata = { title: "Dashboard — SIM Zakat" };
 
 export default async function AdminDashboardPage({ searchParams }) {
-  const showWelcome = searchParams?.toast === "welcome";
+  const { toast } = await searchParams;
+  const showWelcome = toast === "welcome";
   const session = await getServerSession(authOptions);
   const mosqueRes = await findMosqueByUserId(session.user.id);
 

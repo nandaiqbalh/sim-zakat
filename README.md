@@ -1,103 +1,189 @@
-# Multi‑Auth Template
+# SIM Zakat — Sistem Informasi Manajemen Zakat
 
-This repository is a customizable Next.js starter focused on authentication and
-role-based access. It includes a basic multi-auth UI along with a layered
-back-end structure. You can modify the front-end components freely; the
-business logic lives under `lib/` and is unaffected by UI changes.
+Platform digital terintegrasi untuk pengelolaan zakat masjid secara akuntabel, transparan, dan terstruktur.
 
-## Architectural Layers
+🌐 **Live App:** [sim-zakat.nandaiqbalh.com](https://sim-zakat.nandaiqbalh.com)  
+📖 **Panduan Penggunaan:** [sim-zakat.nandaiqbalh.com/docs](https://sim-zakat.nandaiqbalh.com/docs)  
+🧮 **Kalkulator Zakat:** [sim-zakat.nandaiqbalh.com/calculator](https://sim-zakat.nandaiqbalh.com/calculator/zakat-fitrah)
 
-- **Repository layer** (`lib/repositories`) handles direct database access via
-  Prisma.
-- **Service layer** (`lib/services`) encapsulates business rules and workflows
-  like registration, login validation, profile updates, etc.
-- **Action layer** (`lib/actions`) bridges between server components/pages and
-  the service layer, typically used by client actions in Next.js.
+---
 
-These layers operate independently from the UI; you may remove or replace
-components without touching the data logic.
+## ✨ Fitur Utama
 
-## Project Structure
+| Fitur | Keterangan |
+|---|---|
+| 🕌 Manajemen Masjid | Daftarkan masjid dan atur staf (Manager & Distributor) |
+| ⬇️ Penerimaan Zakat | Catat transaksi zakat fitrah, maal, infaq, dan sedekah |
+| 👥 Data Mustahik | Kelola 8 asnaf penerima zakat beserta wilayah dan status aktif |
+| 🔄 Konversi Aset | Konversi beras ke uang sesuai harga pasar setempat |
+| 📦 Program Distribusi | Buat program dan distribusikan zakat langsung ke mustahik |
+| 📊 Dashboard & Laporan | Pantau saldo, statistik, dan riwayat distribusi |
+| 🧮 Kalkulator Zakat | Hitung zakat fitrah & fidyah (publik, tanpa login) |
+| 📖 Dokumentasi | Panduan penggunaan lengkap dalam aplikasi |
 
-The repository is organized roughly as follows:
+---
 
-```
-app/                   # Next.js app routes and layouts
-  (auth)/             # login/register helpers
-  (main)/             # client-facing pages (account, product, etc.)
-  admin/              # administrative pages
-components/           # reusable UI components grouped by domain
-  auth/               # inputs, buttons, forms for authentication
-  common/             # header, footer, dialogs, layout helpers
-  ui/                 # base design system (card, dialog, etc.)
-lib/                  # utility functions, font definitions, services
-prisma/               # Prisma schema and migrations
-public/               # static assets (images, fonts)
-docker/               # Dockerfiles and configuration for containers
+## 🏗️ Arsitektur
+
+Proyek ini menggunakan pendekatan layered architecture:
 
 ```
+├── lib/
+│   ├── repositories/   # Akses database via Prisma (query layer)
+│   ├── services/       # Business logic & aturan aplikasi
+│   ├── actions/        # Server Actions — jembatan UI ↔ service
+│   └── validations/    # Validasi input dengan Zod
+```
 
-**Note:** business logic layers such as repositories, services, and validations
-live under `lib/` and are not modified by the UI template changes.
+Ketiga layer ini **independen dari UI** — komponen dapat diganti tanpa menyentuh logika bisnis.
 
-## Running the Project
+---
 
-### Prerequisites
+## 📁 Struktur Proyek
 
-- Node.js 18+ (or use `nvm`/`volta` to install)
-- PostgreSQL database (see environment variables below)
-- `npm`, `yarn`, or `pnpm` package manager
+```
+app/
+  (auth)/              # Login & Register
+  admin/               # Halaman admin (dashboard, masjid, transaksi, dll.)
+  calculator/          # Kalkulator zakat fitrah & fidyah (publik)
+  docs/                # Dokumentasi penggunaan (publik)
+  api/                 # API routes (NextAuth, dll.)
+components/
+  admin/               # Navigasi sidebar admin
+  auth/                # Form login & register
+  calculator/          # Komponen kalkulator interaktif
+  docs/                # Sidebar & section dokumentasi
+  mustahik/            # CRUD mustahik
+  programs/            # Program distribusi & form distribusi
+  transactions/        # Transaksi masuk
+  zakat/               # Design system (ZakatButton, ZakatCard, dst.)
+  ui/                  # Base components (dialog, badge, pagination, dst.)
+lib/                   # Actions, services, repositories, validations, utils
+prisma/                # Schema & migrasi database
+docker/                # Dockerfile & konfigurasi nginx/postgres
+```
+
+---
+
+## 🚀 Cara Menjalankan
+
+### Prasyarat
+
+- Node.js 18+
+- PostgreSQL
+- npm / yarn / pnpm
 
 ### Environment Variables
 
-Create a `.env` file in the project root with values similar to:
+Buat file `.env` di root proyek:
 
 ```env
-DATABASE_URL="postgresql://user:password@localhost:5432/next-multi-auth"
-NEXTAUTH_SECRET="some-random-secret"
-# add other variables used by the app (SMTP settings, etc.)
+DATABASE_URL="postgresql://user:password@localhost:5432/sim_zakat"
+NEXTAUTH_SECRET="your-secret-here"
+NEXTAUTH_URL="http://localhost:3000"
 ```
 
-### Local Development (without Docker)
-
-1. Install dependencies:
-   ```bash
-   npm install
-   # or yarn install
-   ```
-2. Prepare the database:
-   ```bash
-   npx prisma migrate dev
-   npx prisma generate
-   ```
-3. Start the dev server:
-   ```bash
-   npm run dev
-   ```
-4. Open `http://localhost:3000` in your browser.
-
-### Using Docker
-
-A `docker-compose.dev.yml` is provided for development; services include
-PostgreSQL and the Next.js app. To start everything:
+### Pengembangan Lokal
 
 ```bash
-# build and start containers
+# 1. Install dependensi
+npm install
+
+# 2. Jalankan migrasi database
+npx prisma migrate dev
+npx prisma generate
+
+# 3. Jalankan dev server
+npm run dev
+```
+
+Buka [http://localhost:3000](http://localhost:3000) di browser.
+
+---
+
+## 🐳 Menggunakan Docker
+
+### Mode Development
+
+```bash
 docker compose -f docker-compose.dev.yml up --build
 ```
 
-The app will be available at `http://localhost:3000`. To apply migrations
-inside the container, run:
+### Mode Production
+
+```bash
+docker compose -f docker-compose.prod.yml up -d
+```
+
+Aplikasi akan berjalan di `http://localhost:3000`.  
+Untuk menjalankan migrasi di dalam container:
 
 ```bash
 docker compose exec app npx prisma migrate dev
 ```
 
-For production, `docker-compose.prod.yml` references a prebuilt image and
-can be used with your own registry.
+---
 
-## Deploy on Vercel
+## 📖 Panduan Penggunaan
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Dokumentasi lengkap tersedia di dalam aplikasi: [/docs](https://sim-zakat.nandaiqbalh.com/docs)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| # | Topik |
+|---|---|
+| 1 | Login & Daftar |
+| 2 | Setup Masjid & Staf |
+| 3 | Catat Transaksi Masuk |
+| 4 | Konversi Aset |
+| 5 | Setup Data Mustahik |
+| 6 | Program Distribusi |
+| 7 | Alur Kerja Distributor |
+| 8 | Ganti Profil |
+| 9 | Kalkulator Zakat & Fidyah |
+| 10 | Kontribusi |
+
+---
+
+## 🧮 Kalkulator Zakat (Publik)
+
+Tersedia tanpa login di `/calculator`:
+
+- **Zakat Fitrah** — hitung untuk N jiwa, pilih bayar beras atau uang, sesuaikan harga per kg
+- **Fidyah** — hitung untuk N orang × N hari, pilih alasan (sakit, lansia, hamil, musafir)
+
+Berdasarkan ketentuan **Kemenag RI**.
+
+---
+
+## 🛠️ Tech Stack
+
+- **Framework:** Next.js 14 (App Router)
+- **Database:** PostgreSQL + Prisma ORM
+- **Auth:** NextAuth.js
+- **Styling:** Tailwind CSS
+- **Icons:** Lucide React
+- **Validasi:** Zod
+- **Deployment:** Docker + Nginx
+
+---
+
+## 🤝 Kontribusi
+
+Kontribusi sangat disambut! Silakan:
+
+1. Fork repository ini
+2. Buat branch baru (`git checkout -b fitur/nama-fitur`)
+3. Commit perubahan (`git commit -m 'feat: tambah fitur X'`)
+4. Push ke branch (`git push origin fitur/nama-fitur`)
+5. Buka Pull Request
+
+Laporkan bug atau ide fitur melalui [GitHub Issues](https://github.com/nandaiqbalh/sim-zakat/issues).
+
+---
+
+## 📄 Lisensi
+
+MIT License — bebas digunakan, dimodifikasi, dan didistribusikan.
+
+---
+
+> Dibuat dengan ❤️ untuk masjid-masjid di Indonesia. Semoga bermanfaat.

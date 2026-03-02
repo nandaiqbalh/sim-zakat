@@ -144,7 +144,7 @@ export default async function LandingPage() {
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-20 sm:py-28">
           <div className="text-center">
             <span className="inline-flex items-center gap-1.5 bg-white/15 text-white/90 text-xs font-semibold px-3 py-1 rounded-full mb-6 border border-white/20">
-              <ShieldCheck className="w-3.5 h-3.5" /> Open Source · Gratis · Docker Ready
+              <ShieldCheck className="w-3.5 h-3.5" /> Open Source · Gratis Selamanya
             </span>
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-[1.1] mb-5 tracking-tight">
               Kelola Zakat Masjid<br />

@@ -45,9 +45,13 @@ export default function LoginForm() {
         const session = await sessionRes.json();
         const role = session?.user?.role;
 
-        router.push(
-            role === "ADMIN" ? "/admin/dashboard?toast=welcome" : "/?toast=welcome"
-        );
+        if (role === "SUPERADMIN") {
+            router.push("/superadmin?toast=welcome");
+        } else if (role === "ADMIN") {
+            router.push("/admin/dashboard?toast=welcome");
+        } else {
+            router.push("/?toast=welcome");
+        }
     };
 
     return (

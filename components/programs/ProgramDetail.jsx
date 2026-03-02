@@ -4,7 +4,8 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { toast } from "sonner";
-import { Trash2, Clock, MapPin, Check } from "lucide-react";
+import { Trash2, Clock, MapPin, Check, Info } from "lucide-react";
+import MustahikDetailDialog from "@/components/mustahik/MustahikDetailDialog";
 import ZakatCard from "@/components/zakat/ZakatCard";
 import ZakatTable, { ZakatTr, ZakatTd } from "@/components/zakat/ZakatTable";
 import ZakatBadge from "@/components/zakat/ZakatBadge";
@@ -28,6 +29,7 @@ export default function ProgramDetail({ program }) {
     const [confirmDistribute, setConfirmDistribute] = useState({ open: false, item: null });
     const [confirmDelete, setConfirmDelete] = useState({ open: false, item: null });
     const [busy, setBusy] = useState({});
+    const [detailDialog, setDetailDialog] = useState({ open: false, mustahik: null });
     const searchParams = useSearchParams();
     const [statusFilter, setStatusFilter]   = useState(searchParams.get("status") || "");
     const [wilayahFilter, setWilayahFilter] = useState(searchParams.get("wilayah") || "");
@@ -255,7 +257,15 @@ export default function ProgramDetail({ program }) {
                                         <ZakatTd>
                                             <ZakatBadge label={statusLabel} variant={statusVariant} />
                                         </ZakatTd>
-                                        <ZakatTd className="font-medium">{g.mustahik.name}</ZakatTd>
+                                            <ZakatTd className="font-medium flex items-center gap-1">
+                                                <button
+                                                    onClick={() => setDetailDialog({ open: true, mustahik: g.mustahik })}
+                                                    className="flex items-center gap-1 text-left cursor-pointer"
+                                                >
+                                                    {g.mustahik.name}
+                                                    <Info className="w-4 h-4 text-gray-400 hover:text-gray-600" />
+                                                </button>
+                                            </ZakatTd>
                                 <ZakatTd className="text-gray-500 text-xs">
                                     {g.mustahik.wilayah ? capitalize(g.mustahik.wilayah.name) : "—"}
                                 </ZakatTd>
@@ -328,6 +338,12 @@ export default function ProgramDetail({ program }) {
                 confirmLabel="Hapus"
                 onConfirm={handleDelete}
                 onClose={() => setConfirmDelete({ open: false, item: null })}
+            />
+
+            <MustahikDetailDialog
+                open={detailDialog.open}
+                mustahik={detailDialog.mustahik}
+                onClose={() => setDetailDialog({ open: false, mustahik: null })}
             />
         </>
     );

@@ -16,7 +16,7 @@ const ASSET_TYPES = [
   { value: "RICE", label: "🌾 Beras (Kilogram)" },
 ];
 
-const BLANK = { mustahikId: "", assetType: "CASH", amount: "" };
+const BLANK = { mustahikId: "", assetType: "RICE", amount: "" };
 
 function fmt(n) {
     return new Intl.NumberFormat("id-ID", {

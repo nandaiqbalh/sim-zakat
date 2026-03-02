@@ -70,7 +70,7 @@ export default function DistributionItemForm({
                 return a === b;
             })
             : mustahik)
-        : []; s
+        : []; 
 
     const doSubmit = async () => {
     setLoading(true);
@@ -87,7 +87,7 @@ export default function DistributionItemForm({
       toast.success("Mustahik berhasil ditambahkan ke program.");
       setForm(BLANK);
         setConfirmAdd(false);
-      router.refresh();
+        router.push(`/admin/programs/${programId}`);
     } else {
       setError(res.message);
       toast.error(res.message);

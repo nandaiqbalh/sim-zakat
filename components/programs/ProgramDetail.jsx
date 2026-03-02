@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { toast } from "sonner";
-import { Trash2, Clock, MapPin, Check, Info } from "lucide-react";
+import { Trash2, Clock, MapPin, Check, Info, FileDown } from "lucide-react";
 import MustahikDetailDialog from "@/components/mustahik/MustahikDetailDialog";
 import ZakatCard from "@/components/zakat/ZakatCard";
 import ZakatTable, { ZakatTr, ZakatTd } from "@/components/zakat/ZakatTable";
@@ -24,8 +24,9 @@ function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-export default function ProgramDetail({ program }) {
+export default function ProgramDetail({ program, mosque = null, balance = {} }) {
     const router = useRouter();
+    const [pdfLoading, setPdfLoading] = useState(false);
     const [confirmDistribute, setConfirmDistribute] = useState({ open: false, item: null });
     const [confirmDelete, setConfirmDelete] = useState({ open: false, item: null });
     const [busy, setBusy] = useState({});
@@ -82,6 +83,19 @@ export default function ProgramDetail({ program }) {
         }
     };
 
+    const handleDownloadPdf = async () => {
+        setPdfLoading(true);
+        try {
+            const { generateProgramPdf } = await import("@/lib/utils/programPdf");
+            await generateProgramPdf({ program, mosque, balance });
+        } catch (err) {
+            console.error("PDF generation failed:", err);
+            toast.error("Gagal membuat PDF. Silakan coba lagi.");
+        } finally {
+            setPdfLoading(false);
+        }
+    };
+
     const items = program.items ?? [];
     const pending = items.filter((i) => i.status === "PENDING");
     const done = items.filter((i) => i.status === "DISTRIBUTED");
@@ -131,6 +145,18 @@ export default function ProgramDetail({ program }) {
 
     return (
         <>
+            {/* ── Download PDF button ── */}
+            <div className="flex justify-end mb-4">
+                <button
+                    onClick={handleDownloadPdf}
+                    disabled={pdfLoading || items.length === 0}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold bg-green-700 text-white hover:bg-green-800 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                >
+                    <FileDown className="w-4 h-4" />
+                    {pdfLoading ? "Membuat PDF…" : "Download PDF"}
+                </button>
+            </div>
+
             {/* ── Summary stats ── */}
             <div className="grid grid-cols-3 gap-4 mb-6">
                 <ZakatCard className="text-center">

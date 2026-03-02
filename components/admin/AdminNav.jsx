@@ -17,6 +17,7 @@ import {
   Settings,
   UserCircle,
   LogOut,
+  BookOpen,
 } from "lucide-react";
 
 const MANAGER_NAV = [
@@ -122,6 +123,15 @@ function SidebarContent({ onClose, mosqueRole, userName }) {
           <LogOut className="w-4 h-4 shrink-0" />
           Keluar
         </button>
+        {/* CTA to documentation */}
+        <Link
+          href="/docs"
+          className="w-full flex items-center gap-3 px-3 py-2 mt-1 rounded-lg text-sm font-medium text-green-700 hover:bg-green-50 transition-colors"
+          onClick={onClose}
+        >
+          <BookOpen className="w-4 h-4 shrink-0" />
+          Baca Panduan
+        </Link>
         <p className="text-xs text-gray-400 px-3 pt-2">© 2026 SIM Zakat</p>
       </div>
     </div>

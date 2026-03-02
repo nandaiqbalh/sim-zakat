@@ -30,7 +30,7 @@ export default function KontribusiSection() {
           <Github className="w-10 h-10" />
           <div>
             <p className="font-bold text-base">nandaiqbalh / sim-zakat</p>
-            <p className="text-sm text-gray-400 mt-0.5">Open source · MIT License</p>
+                      <p className="text-sm text-gray-400 mt-0.5">Open source · Gratis Selamanya</p>
           </div>
         </div>
         <Link

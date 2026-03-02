@@ -1,6 +1,5 @@
 // app/superadmin/layout.js
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/authOptions";
+import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
 import { dmSans } from "@/lib/fonts";
 import SuperAdminNav from "@/components/superadmin/SuperAdminNav";
@@ -10,7 +9,7 @@ export const metadata = {
 };
 
 export default async function SuperAdminLayout({ children }) {
-  const session = await getServerSession(authOptions);
+    const session = await getSession();
   if (!session || session.user?.role !== "SUPERADMIN") {
     redirect("/login");
   }

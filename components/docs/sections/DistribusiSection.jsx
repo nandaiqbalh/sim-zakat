@@ -61,7 +61,10 @@ export default function DistribusiSection() {
           <Step number={4} title="Lihat daftar mustahik penerima">
             <p>Halaman detail program menampilkan semua mustahik yang terdaftar sebagai penerima, beserta jumlah yang perlu diberikan per orang.</p>
           </Step>
-          <Step number={5} title="Distribusikan sesuai daftar">
+                  <Step number={5} title="Unduh laporan (opsional)">
+                      <p>Jika Anda butuh cetakan atau daftar offline, klik tombol <strong>Download PDF</strong> di pojok kanan atas untuk mengekspor seluruh daftar distribusi dan ringkasan program.</p>
+                  </Step>
+                  <Step number={6} title="Distribusikan sesuai daftar">
             <p>Bagikan zakat secara fisik kepada masing-masing mustahik. Data distribusi sudah dicatat di sistem oleh Manager saat memasukkan mustahik ke program.</p>
           </Step>
         </div>
@@ -77,6 +80,7 @@ export default function DistribusiSection() {
             "Melihat jumlah distribusi yang harus diberikan ke setiap mustahik",
             "Melihat info lengkap mustahik (nama, alamat, wilayah) melalui ikon detail",
             "Melihat ringkasan saldo program (anggaran, terpakai, sisa)",
+                      "Mengunduh laporan distribusi sebagai file PDF",
             "Mencatat transaksi masuk (input pembayaran zakat dari muzakki)",
           ].map((item, i) => (
             <li key={i} className="flex items-start gap-2 text-sm text-gray-600">

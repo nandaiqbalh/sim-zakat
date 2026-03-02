@@ -123,7 +123,11 @@ export default async function ProgramDetailPage({ params }) {
             <ProgramBalanceCard balance={balance} />
 
             {/* Daftar distribusi */}
-            <ProgramDetail program={program} />
+            <ProgramDetail
+                program={program}
+                mosque={JSON.parse(JSON.stringify(mosqueRes.data))}
+                balance={balanceRes.data ?? {}}
+            />
         </div>
     );
 }

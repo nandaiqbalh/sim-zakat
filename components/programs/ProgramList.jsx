@@ -19,7 +19,7 @@ export default function ProgramList({ programs, onCreate }) {
         description="Buat program distribusi untuk mulai merencanakan penyaluran zakat."
         icon={Package}
         action={
-          <ZakatButton onClick={onCreate}>+ Program Baru</ZakatButton>
+          onCreate ? <ZakatButton onClick={onCreate}>+ Program Baru</ZakatButton> : undefined
         }
       />
     );

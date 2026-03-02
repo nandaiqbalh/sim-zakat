@@ -16,9 +16,9 @@ export default async function ProgramsPage() {
   if (!userMosqueRes.success || !userMosqueRes.data) {
     return (
       <div className="text-center py-20">
-        <p className="text-gray-600 mb-3">No mosque found. Please set up your mosque first.</p>
+        <p className="text-gray-600 mb-3">Masjid tidak ditemukan. Silakan daftarkan masjid terlebih dahulu.</p>
         <Link href="/admin/mosque" className="text-green-700 font-medium hover:underline">
-          Set up mosque →
+          Atur masjid →
         </Link>
       </div>
     );
@@ -34,9 +34,9 @@ export default async function ProgramsPage() {
   if (!mosqueRes.success || !mosqueRes.data) {
     return (
       <div className="text-center py-20">
-        <p className="text-gray-600 mb-3">No mosque found. Please set up your mosque first.</p>
+        <p className="text-gray-600 mb-3">Masjid tidak ditemukan. Silakan daftarkan masjid terlebih dahulu.</p>
         <Link href="/admin/mosque" className="text-green-700 font-medium hover:underline">
-          Set up mosque →
+          Atur masjid →
         </Link>
       </div>
     );
@@ -49,9 +49,9 @@ export default async function ProgramsPage() {
     <div>
       <ZakatPageHeader
         title="Program Distribusi"
-        description="Create and manage zakat distribution programs."
+        description="Buat dan kelola program distribusi zakat."
       />
-      <ProgramsPageClient programs={programs} />
+      <ProgramsPageClient programs={programs} role={role} />
     </div>
   );
 }

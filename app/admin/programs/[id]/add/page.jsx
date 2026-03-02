@@ -76,7 +76,9 @@ export default async function AddDistributionPage({ params }) {
     getWilayahByMosque(mosqueRes.data.id),
   ]);
 
-  const mustahik   = mustahikRes.data ?? [];
+  console.log('mustahikRes:', mustahikRes);
+  const mustahik = mustahikRes.data?.mustahiks ?? [];
+  console.log('mustahik array:', mustahik);
   const balance    = balanceRes.data  ?? {};
   const wilayah    = wilayahRes.data  ?? [];
   const existingIds = program.items?.map((i) => i.mustahik.id) ?? [];

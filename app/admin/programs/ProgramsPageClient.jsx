@@ -6,21 +6,27 @@ import ZakatButton from "@/components/zakat/ZakatButton";
 import ProgramList from "@/components/programs/ProgramList";
 import ProgramFormDialog from "@/components/programs/ProgramFormDialog";
 
-export default function ProgramsPageClient({ programs }) {
+export default function ProgramsPageClient({ programs, role }) {
   const [showCreate, setShowCreate] = useState(false);
+
+  const isManager = role === "MANAGER";
 
   return (
     <>
-      <div className="flex justify-end mb-4">
-              <ZakatButton onClick={() => setShowCreate(true)}>+ Tambah Program</ZakatButton>
-      </div>
+      {isManager && (
+        <div className="flex justify-end mb-4">
+          <ZakatButton onClick={() => setShowCreate(true)}>+ Program Baru</ZakatButton>
+        </div>
+      )}
 
-      <ProgramList programs={programs} onCreate={() => setShowCreate(true)} />
+      <ProgramList programs={programs} onCreate={isManager ? () => setShowCreate(true) : undefined} />
 
-      <ProgramFormDialog
-        open={showCreate}
-        onClose={() => setShowCreate(false)}
-      />
+      {isManager && (
+        <ProgramFormDialog
+          open={showCreate}
+          onClose={() => setShowCreate(false)}
+        />
+      )}
     </>
   );
 }

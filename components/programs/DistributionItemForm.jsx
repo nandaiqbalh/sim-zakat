@@ -33,7 +33,7 @@ function capitalize(str) {
 
 export default function DistributionItemForm({
     programId,
-    mustahik,
+    mustahik: mustahikProp = [],
     balance = {},
     existingIds = [],
     wilayahOptions = [],
@@ -48,6 +48,9 @@ export default function DistributionItemForm({
 
     const set = (field) => (e) => setForm((p) => ({ ...p, [field]: e.target.value }));
 
+    // Ensure mustahik is always an array
+    const mustahik = Array.isArray(mustahikProp) ? mustahikProp : [];
+
     // ── Saldo ──
     const cashAvailable = balance.cashAvailable ?? 0;
     const riceAvailable = balance.riceAvailable ?? 0;
@@ -58,9 +61,16 @@ export default function DistributionItemForm({
     const isOverBalance = amount > 0 && amount > curAvailable;
 
     // ── Filter mustahik by wilayah ──
-    const filteredMustahik = wilayahFilter
-        ? mustahik.filter((m) => m.wilayah?.name === wilayahFilter)
-        : mustahik;
+    const filteredMustahik = Array.isArray(mustahik)
+        ? (wilayahFilter
+            ? mustahik.filter((m) => {
+                if (!m.wilayah?.name) return false;
+                const a = m.wilayah.name.trim().replace(/\s+/g, "").toLowerCase();
+                const b = wilayahFilter.trim().replace(/\s+/g, "").toLowerCase();
+                return a === b;
+            })
+            : mustahik)
+        : []; s
 
     const doSubmit = async () => {
     setLoading(true);
@@ -144,16 +154,20 @@ export default function DistributionItemForm({
                                       className={selectCls}
                                       value={wilayahFilter}
                                       onChange={(e) => {
-                                          setWilayahFilter(e.target.value);
+                                          const v = e.target.value.trim();
+                                          setWilayahFilter(v);
                                           setForm((p) => ({ ...p, mustahikId: "" }));
                                       }}
                                   >
                                       <option value="">— Semua wilayah —</option>
-                                      {wilayahOptions.map((w) => (
-                                          <option key={w.id} value={w.name}>
-                                              {capitalize(w.name)}
-                                          </option>
-                                      ))}
+                                        {wilayahOptions.map((w) => {
+                                            const name = w.name.trim();
+                                            return (
+                                                <option key={w.id} value={name}>
+                                                    {capitalize(name)}
+                                                </option>
+                                            );
+                                        })}
                                   </select>
                               </ZakatFormField>
                           )}

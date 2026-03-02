@@ -40,7 +40,7 @@ export default function AddStaffDialog({ open, onClose, mosqueId }) {
 
   return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-md">
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
           <h2 className="text-base font-bold text-gray-900">Tambah Staf Masjid</h2>
@@ -83,7 +83,7 @@ export default function AddStaffDialog({ open, onClose, mosqueId }) {
               <input
                 type={showPassword ? "text" : "password"}
                 className={inputCls}
-                placeholder="Min. 6 karakter"
+                placeholder="Min. 8 karakter, huruf besar, angka, dan simbol"
                 value={form.password}
                 onChange={set("password")}
                 required
@@ -121,7 +121,7 @@ export default function AddStaffDialog({ open, onClose, mosqueId }) {
           </ZakatFormField>
 
           {error && (
-            <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">{error}</p>
+            <p className="text-sm text-red-700 bg-red-50 border border-red-200 px-3 py-2 rounded-lg">{error}</p>
           )}
 
           <div className="flex gap-2 pt-1">

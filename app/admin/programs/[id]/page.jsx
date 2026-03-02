@@ -8,6 +8,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft, PlusCircle } from "lucide-react";
 import ZakatPageHeader from "@/components/zakat/ZakatPageHeader";
+import Unauthorized from "@/components/ui/Unauthorized";
 import ProgramDetail from "@/components/programs/ProgramDetail";
 import ProgramBalanceCard from "@/components/programs/ProgramBalanceCard";
 
@@ -32,6 +33,11 @@ export default async function ProgramDetailPage({ params }) {
         findMosqueUserByUserId(session.user.id),
         getProgramById(id),
     ]);
+
+    const role = mosqueUserRes?.data?.role;
+    if (role !== "MANAGER" && role !== "DISTRIBUTOR") {
+        return <Unauthorized message="Anda tidak memiliki akses ke halaman program." />;
+    }
 
     if (!mosqueRes.success || !mosqueRes.data) {
         return (
@@ -62,12 +68,14 @@ export default async function ProgramDetailPage({ params }) {
 
     if (program.mosqueId !== mosqueRes.data.id) {
         return (
-            <div className="text-center py-20">
-                <p className="text-gray-600 mb-3">Anda tidak memiliki akses ke program ini.</p>
+            <>
+                <Unauthorized message="Anda tidak memiliki akses ke program ini." />
+                <div className="text-center mt-4">
                 <Link href="/admin/programs" className="text-green-700 font-medium hover:underline">
                     Kembali ke daftar program →
                 </Link>
-            </div>
+                </div>
+            </>
         );
     }
 

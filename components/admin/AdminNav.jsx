@@ -32,6 +32,7 @@ const MANAGER_NAV = [
 const DISTRIBUTOR_NAV = [
   { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { divider: true },
+  { href: "/admin/transactions", label: "Transaksi Masuk", icon: ArrowDownToLine },
   { href: "/admin/programs", label: "Program Distribusi", icon: Package },
 ];
 

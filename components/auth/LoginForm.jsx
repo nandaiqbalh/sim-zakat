@@ -7,7 +7,7 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useState } from "react";
-import { toast } from "../ui/sonner";
+
 import { loginSchema } from "@/lib/validations/auth.schema";
 import AuthInput from "./AuthInput";
 import AuthButton from "./AuthButton";
@@ -38,7 +38,6 @@ export default function LoginForm() {
         if (res?.error) {
             const message = "Email atau password salah. Periksa kembali kredensial Anda.";
             setDialog({ open: true, title: "Login Gagal", description: message });
-            toast.error(message);
             return;
         }
 
@@ -78,14 +77,7 @@ export default function LoginForm() {
                     autoComplete="current-password"
                     {...register("password")}
                 />
-                <div className="flex justify-end">
-                    <Link
-                        href="/forgot-password"
-                        className="text-gray-400 text-xs hover:text-green-700 transition-colors"
-                    >
-                        Lupa password?
-                    </Link>
-                </div>
+
                 <AuthButton loading={isSubmitting}>Masuk</AuthButton>
                 <AuthDivider />
                 <GoogleButton callbackUrl="/" />

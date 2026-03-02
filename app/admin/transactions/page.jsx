@@ -1,20 +1,24 @@
 // app/admin/transactions/page.jsx
+export const dynamic = "force-dynamic";
+// ensure no cache is kept, even by incremental static regeneration
+export const revalidate = 0;
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
-import { findMosqueByUserId } from "@/lib/repositories/mosque.repository";
+import { findMosqueByUserId, findMosqueUserByUserId } from "@/lib/repositories/mosque.repository";
 import { getTransactionsByMosque, getZakatBalance } from "@/lib/repositories/transaction.repository";
 import ZakatPageHeader from "@/components/zakat/ZakatPageHeader";
 import BalanceCards from "@/components/transactions/BalanceCards";
 import TransactionList from "@/components/transactions/TransactionList";
 import Link from "next/link";
+import Unauthorized from "@/components/ui/Unauthorized";
 
 export const metadata = { title: "Transaksi Zakat — SIM Zakat" };
 
 export default async function TransactionsPage({ searchParams }) {
   const session   = await getServerSession(authOptions);
-  const mosqueRes = await findMosqueByUserId(session.user.id);
-
-  if (!mosqueRes.success || !mosqueRes.data) {
+  // ensure the user belongs to a mosque and get their role
+  const userMosqueRes = await findMosqueUserByUserId(session.user.id);
+  if (!userMosqueRes.success || !userMosqueRes.data) {
     return (
       <div className="text-center py-20">
         <p className="text-gray-600 mb-3">Masjid tidak ditemukan. Silakan daftarkan masjid terlebih dahulu.</p>
@@ -28,7 +32,13 @@ export default async function TransactionsPage({ searchParams }) {
     );
   }
 
-  const mosque = mosqueRes.data;
+  const mosque = userMosqueRes.data.mosque;
+  const role = userMosqueRes.data.role;
+
+  // only managers and distributors may see transaction pages
+  if (role !== "MANAGER" && role !== "DISTRIBUTOR") {
+    return <Unauthorized message="Anda tidak memiliki akses ke halaman transaksi." />;
+  }
 
   const page      = parseInt(searchParams.page || "1", 10) || 1;
   const search    = searchParams.search || "";
@@ -45,11 +55,16 @@ export default async function TransactionsPage({ searchParams }) {
     }),
   ]);
 
+  // make sure data is plain JSON to avoid hydration/cloning issues
+  const txData = txRes.data
+    ? JSON.parse(JSON.stringify(txRes.data))
+    : null;
+
   return (
     <div>
       <ZakatPageHeader
         title="Transaksi Zakat Masuk"
-        description="Catat pemasukan zakat dari muzakki. Muzakki baru akan dibuat secara otomatis."
+        description="Catat pemasukan zakat dari muzakki."
       />
 
       {/* Responsive BalanceCards */}
@@ -86,10 +101,12 @@ export default async function TransactionsPage({ searchParams }) {
         </Link>
       </div>
       <TransactionList
-        transactions={txRes.data?.transactions ?? []}
-        page={txRes.data?.page}
-        total={txRes.data?.total}
-        limit={txRes.data?.limit}
+        transactions={txData?.transactions ?? []}
+        page={txData?.page}
+        total={txData?.total}
+        limit={txData?.limit}
+        search={search}
+        assetType={assetType}
       />
     </div>
   );

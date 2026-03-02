@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { toast } from "../ui/sonner";
 import { registerSchema } from "@/lib/validations/auth.schema";
 import AuthInput from "./AuthInput";
 import AuthButton from "./AuthButton";
@@ -56,7 +55,6 @@ export default function RegisterForm() {
       if (!res.ok || data.success === false) {
         const msg = data.message || "Pendaftaran gagal. Silakan coba lagi.";
         setDialog({ open: true, title: "Pendaftaran Gagal", description: msg });
-        toast.error(msg);
 
         if (/phone|hp|telepon/i.test(msg)) setError("phone", { message: msg });
         if (/email/i.test(msg)) setError("email", { message: msg });
@@ -124,7 +122,7 @@ export default function RegisterForm() {
           autoComplete="new-password"
           {...register("confirmPassword")}
         />
-        <AuthButton loading={isSubmitting}>Create Account</AuthButton>
+        <AuthButton loading={isSubmitting}>Buat Akun</AuthButton>
         <AuthDivider />
         <GoogleButton callbackUrl="/" />
         <p className="text-center text-neutral-600 text-[11px] tracking-wide">

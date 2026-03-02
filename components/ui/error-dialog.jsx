@@ -38,7 +38,7 @@ export default function ErrorDialog({ open, title, description, onClose }) {
         <div className="px-5 py-4 border-t border-gray-100 flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-green-700 text-white text-sm font-semibold rounded-lg hover:bg-green-800 transition"
+            className="px-4 py-2 bg-green-700 text-white text-sm font-semibold rounded-lg hover:bg-green-800 transition cursor-pointer"
           >
             Tutup
           </button>

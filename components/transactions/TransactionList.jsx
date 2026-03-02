@@ -1,9 +1,15 @@
+"use client";
 // components/transactions/TransactionList.jsx
+import { useState } from "react";
 import ZakatCard from "@/components/zakat/ZakatCard";
 import ZakatTable, { ZakatTr, ZakatTd } from "@/components/zakat/ZakatTable";
 import ZakatBadge from "@/components/zakat/ZakatBadge";
 import ZakatEmptyState from "@/components/zakat/ZakatEmptyState";
-import { ClipboardList } from "lucide-react";
+import { ClipboardList, Edit2, Trash2 } from "lucide-react";
+import ConfirmDialog from "@/components/ui/confirm-dialog";
+import TransactionForm from "./TransactionForm";
+import { deleteTransactionAction, listTransactionsAction } from "@/lib/actions/transaction.actions";
+import { useRouter } from "next/navigation";
 
 function fmt(n) {
   return new Intl.NumberFormat("id-ID", {
@@ -23,16 +29,62 @@ function fmtDate(d) {
   });
 }
 
-export default function TransactionList({ transactions = [], page = 1, total = 0, limit = 10 }) {
-  const lastPage = Math.max(1, Math.ceil(total / limit));
-  const pathname = typeof window !== "undefined" ? window.location.pathname : "";
-  const search = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : new URLSearchParams();
+export default function TransactionList({
+  transactions = [],
+  page = 1,
+  total = 0,
+  limit = 10,
+  search: initialSearch = "",
+  assetType: initialAssetType = "",
+}) {
+  const router = useRouter();
+  const [editingTx, setEditingTx] = useState(null);
+  const [confirm, setConfirm] = useState({ open: false, id: null });
+  const [currPage, setCurrPage] = useState(page);
+  const [currTotal, setCurrTotal] = useState(total);
+  const [currTransactions, setCurrTransactions] = useState(transactions);
+  const lastPage = Math.max(1, Math.ceil(currTotal / limit));
+  // build params from props (supplied by server) rather than window
+  const baseParams = new URLSearchParams();
+  if (initialSearch) baseParams.set("search", initialSearch);
+  if (initialAssetType) baseParams.set("assetType", initialAssetType);
+  const pathname = "/admin/transactions";
+
+  const handleDelete = async () => {
+    const res = await deleteTransactionAction(confirm.id);
+    setConfirm({ open: false, id: null });
+    if (res.success) {
+      // simply refresh page
+      window.location.reload();
+    } else {
+      alert(res.message);
+    }
+  };
+
+  const changePage = async (newPage) => {
+    if (newPage < 1 || newPage > lastPage) return;
+    const res = await listTransactionsAction({ page: newPage, search: initialSearch, assetType: initialAssetType });
+    if (res.success) {
+      setCurrTransactions(res.data.transactions);
+      setCurrTotal(res.data.total);
+      setCurrPage(newPage);
+      // update URL
+      const params = new URLSearchParams(baseParams.toString());
+      if (newPage > 1) params.set("page", newPage);
+      else params.delete("page");
+      const qs = params.toString();
+      router.push(qs ? `${pathname}?${qs}` : pathname, { shallow: true });
+    } else {
+      alert(res.message);
+    }
+  };
 
   const buildLink = (newPage) => {
-    const params = new URLSearchParams(search.toString());
+    const params = new URLSearchParams(baseParams.toString());
     if (newPage && newPage > 1) params.set("page", newPage);
     else params.delete("page");
-    return `${pathname}?${params.toString()}`;
+    const qs = params.toString();
+    return qs ? `${pathname}?${qs}` : pathname;
   };
 
   return (
@@ -41,7 +93,7 @@ export default function TransactionList({ transactions = [], page = 1, total = 0
         <ClipboardList className="w-4 h-4 text-green-700" />
         Transaksi Terbaru
         <span className="ml-auto text-xs font-normal text-gray-400">
-          {total} entri
+          {currTotal} entri
         </span>
       </h3>
 
@@ -51,8 +103,8 @@ export default function TransactionList({ transactions = [], page = 1, total = 0
           description="Gunakan tombol Tambah Transaksi untuk mulai mencatat."
         />
       ) : (
-        <ZakatTable headers={["Tanggal", "Muzakki", "Jenis", "Jumlah", "Petugas"]}>
-          {transactions.map((tx) => (
+          <ZakatTable headers={["Tanggal", "Muzakki", "Jenis", "Jumlah", "Catatan", "Petugas", "Aksi"]}>
+            {currTransactions.map((tx) => (
             <ZakatTr key={tx.id}>
               <ZakatTd className="whitespace-nowrap text-xs text-gray-500">
                 {fmtDate(tx.createdAt)}
@@ -69,27 +121,70 @@ export default function TransactionList({ transactions = [], page = 1, total = 0
                   ? fmt(tx.amount)
                   : `${Number(tx.amount).toFixed(2)} kg`}
               </ZakatTd>
+              <ZakatTd className="whitespace-normal break-words">
+                {tx.note || "—"}
+              </ZakatTd>
               <ZakatTd className="text-xs text-gray-500">
                 {tx.createdBy?.name ?? tx.createdBy?.email ?? "—"}
+              </ZakatTd>
+              <ZakatTd className="flex gap-2">
+                <button
+                  onClick={() => setEditingTx(tx)}
+                  title="Edit"
+                  className="p-1 text-blue-500 hover:text-blue-700"
+                >
+                  <Edit2 className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setConfirm({ open: true, id: tx.id })}
+                  title="Hapus"
+                  className="p-1 text-red-500 hover:text-red-700"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
               </ZakatTd>
             </ZakatTr>
           ))}
         </ZakatTable>
       )}
-      {total > limit && (
+      {editingTx && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+          <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-lg">
+            <TransactionForm
+              transaction={editingTx}
+              onSuccess={() => window.location.reload()}
+              onCancel={() => setEditingTx(null)}
+            />
+          </div>
+        </div>
+      )}
+
+      <ConfirmDialog
+        open={confirm.open}
+        title="Hapus Transaksi"
+        description="Apakah Anda yakin ingin menghapus transaksi ini?"
+        confirmLabel="Hapus"
+        cancelLabel="Batal"
+        onConfirm={handleDelete}
+        onClose={() => setConfirm({ open: false, id: null })}
+      />
+
+      {currTotal > limit && (
         <div className="mt-4 flex justify-between text-sm">
           <a
-            href={buildLink(page - 1)}
-            className={`px-3 py-1 rounded ${page > 1 ? "bg-green-100 text-green-700" : "text-gray-400"}`}
+            href={buildLink(currPage - 1)}
+            onClick={(e) => { e.preventDefault(); changePage(currPage - 1); }}
+            className={`px-3 py-1 rounded ${currPage > 1 ? "bg-green-100 text-green-700" : "text-gray-400"}`}
           >
             Sebelumnya
           </a>
           <span className="text-gray-500">
-            {page} / {lastPage}
+            {currPage} / {lastPage}
           </span>
           <a
-            href={buildLink(page + 1)}
-            className={`px-3 py-1 rounded ${page < lastPage ? "bg-green-100 text-green-700" : "text-gray-400"}`}
+            href={buildLink(currPage + 1)}
+            onClick={(e) => { e.preventDefault(); changePage(currPage + 1); }}
+            className={`px-3 py-1 rounded ${currPage < lastPage ? "bg-green-100 text-green-700" : "text-gray-400"}`}
           >
             Berikutnya
           </a>

@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useSession } from "next-auth/react";
 import { Trash2, UserCog } from "lucide-react";
 import ZakatCard from "@/components/zakat/ZakatCard";
 import ZakatTable, { ZakatTr, ZakatTd } from "@/components/zakat/ZakatTable";
@@ -18,6 +19,8 @@ const ROLE_LABEL   = { MANAGER: "Manajer", DISTRIBUTOR: "Distributor" };
 
 export default function StaffList({ staff, onAdd }) {
   const router = useRouter();
+  const { data: session } = useSession();
+  const currentUserId = session?.user?.id;
   const [confirm, setConfirm] = useState({ open: false, id: null, name: "" });
   const [removing, setRemoving] = useState(false);
 
@@ -64,13 +67,18 @@ export default function StaffList({ staff, onAdd }) {
                   />
                 </ZakatTd>
                 <ZakatTd>
-                  <button
-                    onClick={() => setConfirm({ open: true, id: s.id, name: s.user.name ?? s.user.email })}
-                    className="p-1.5 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition"
-                    title="Hapus dari masjid"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                  {s.user.id !== currentUserId && (
+                    <button
+                      onClick={() => setConfirm({ open: true, id: s.id, name: s.user.name ?? s.user.email })}
+                      className="p-1.5 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition cursor-pointer"
+                      title="Hapus dari masjid"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
+                  {s.user.id === currentUserId && (
+                    <span className="text-gray-400 text-sm">(Anda)</span>
+                  )}
                 </ZakatTd>
               </ZakatTr>
             ))}

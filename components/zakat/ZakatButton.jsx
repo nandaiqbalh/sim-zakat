@@ -40,7 +40,7 @@ export default function ZakatButton({
         ${variantClasses[variant] ?? variantClasses.primary}
         ${sizeClasses[size] ?? sizeClasses.md}
         ${className}
-      `}
+      cursor-pointer`}
     >
       {loading && (
         <svg

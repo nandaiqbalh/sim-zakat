@@ -8,24 +8,30 @@ import { PlusCircle } from "lucide-react";
 import ZakatCard from "@/components/zakat/ZakatCard";
 import ZakatButton from "@/components/zakat/ZakatButton";
 import ZakatFormField, { inputCls, selectCls } from "@/components/zakat/ZakatFormField";
-import { recordTransactionAction } from "@/lib/actions/transaction.actions";
+import { recordTransactionAction, updateTransactionAction } from "@/lib/actions/transaction.actions";
 
 const ASSET_TYPES = [
-  { value: "CASH", label: "💵 Uang Tunai (Rupiah)" },
   { value: "RICE", label: "🌾 Beras (Kilogram)" },
+  { value: "CASH", label: "💵 Uang Tunai (Rupiah)" },
 ];
 
-const INITIAL = { muzakkiName: "", assetType: "CASH", amount: "", note: "" };
+const INITIAL = { muzakkiName: "", assetType: "RICE", amount: "", note: "" };
 
-export default function TransactionForm({ onSuccess, redirectTo }) {
+export default function TransactionForm({ onSuccess, redirectTo, transaction = null, onCancel }) {
   const router = useRouter();
-  const [form, setForm] = useState(INITIAL);
+  const [form, setForm] = useState(transaction ? {
+    muzakkiName: transaction.muzakki?.name || "",
+    assetType: transaction.assetType,
+    amount: transaction.amount,
+    note: transaction.note || "",
+  } : INITIAL);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleSuccess = () => {
     if (typeof onSuccess === "function") return onSuccess();
     if (redirectTo) return router.push(redirectTo);
+    if (onCancel) return onCancel();
     router.refresh();
   }
   const set = (field) => (e) =>
@@ -36,10 +42,10 @@ export default function TransactionForm({ onSuccess, redirectTo }) {
     setLoading(true);
     setError("");
 
-    const res = await recordTransactionAction({
-      ...form,
-      amount: parseFloat(form.amount),
-    });
+    const payload = { ...form, amount: parseFloat(form.amount) };
+    const res = transaction
+      ? await updateTransactionAction(transaction.id, payload)
+      : await recordTransactionAction(payload);
 
     setLoading(false);
 
@@ -57,7 +63,7 @@ export default function TransactionForm({ onSuccess, redirectTo }) {
     <ZakatCard accent>
       <h3 className="text-base font-semibold text-gray-800 flex items-center gap-2 mb-4">
         <PlusCircle className="w-4 h-4 text-green-700" />
-        Catat Transaksi Baru
+        {transaction ? "Edit Transaksi" : "Catat Transaksi Baru"}
       </h3>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -111,7 +117,7 @@ export default function TransactionForm({ onSuccess, redirectTo }) {
           <input
             type="text"
             className={inputCls}
-            placeholder="Catatan tambahan…"
+            placeholder="Contoh: Zakat fitrah untuk Bu Siti dan Sdr. Ahmad"
             value={form.note}
             onChange={set("note")}
           />
@@ -119,6 +125,12 @@ export default function TransactionForm({ onSuccess, redirectTo }) {
 
         {error && (
           <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">{error}</p>
+        )}
+
+        {transaction && onCancel && (
+          <ZakatButton variant="secondary" onClick={onCancel} className="w-full justify-center">
+            Batal
+          </ZakatButton>
         )}
 
         <ZakatButton type="submit" loading={loading} className="w-full justify-center">

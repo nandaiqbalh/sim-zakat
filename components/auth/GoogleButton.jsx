@@ -18,7 +18,7 @@ export default function GoogleButton({ callbackUrl = "/", theme = "dark" }) {
       type="button"
       onClick={handleClick}
       disabled={loading}
-      className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-green-50 hover:border-green-400 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium text-gray-700"
+      className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-green-50 hover:border-green-400 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium text-gray-700 cursor-pointer"
     >
       {loading ? (
         <span className="w-4 h-4 border border-current border-t-transparent rounded-full animate-spin" />

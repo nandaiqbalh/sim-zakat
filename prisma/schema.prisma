@@ -56,14 +56,15 @@ model Mosque {
 
 model MosqueUser {
   id        String @id @default(cuid())
-  userId    String
+  userId    String   @unique
   mosqueId  String
   role      MosqueRole
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   mosque Mosque @relation(fields: [mosqueId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, mosqueId])
+  // compound unique no longer needed since userId by itself is unique
+  //@@unique([userId, mosqueId])
 }
 
 model Mustahik {

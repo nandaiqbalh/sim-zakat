@@ -1,20 +1,21 @@
 // app/admin/mustahik/page.jsx
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
-import { findMosqueByUserId } from "@/lib/repositories/mosque.repository";
+import { findMosqueByUserId, findMosqueUserByUserId } from "@/lib/repositories/mosque.repository";
 import { getMustahikByMosque } from "@/lib/repositories/mustahik.repository";
 import { getWilayahByMosque } from "@/lib/repositories/wilayah.repository";
 import ZakatPageHeader from "@/components/zakat/ZakatPageHeader";
 import MustahikPageClient from "./MustahikPageClient";
 import Link from "next/link";
+import Unauthorized from "@/components/ui/Unauthorized";
 
 export const metadata = { title: "Mustahik — SIM Zakat" };
 
 export default async function MustahikPage() {
   const session   = await getServerSession(authOptions);
-  const mosqueRes = await findMosqueByUserId(session.user.id);
+  const userMosqueRes = await findMosqueUserByUserId(session.user.id);
 
-  if (!mosqueRes.success || !mosqueRes.data) {
+  if (!userMosqueRes.success || !userMosqueRes.data) {
     return (
       <div className="text-center py-20">
         <p className="text-gray-600 mb-3">Masjid tidak ditemukan. Silakan daftarkan masjid terlebih dahulu.</p>
@@ -24,6 +25,12 @@ export default async function MustahikPage() {
       </div>
     );
   }
+
+  if (userMosqueRes.data.role !== "MANAGER") {
+    return <Unauthorized message="Anda tidak memiliki akses ke halaman data mustahik." />;
+  }
+
+  const mosqueRes = await findMosqueByUserId(session.user.id);
 
     const [mustahikRes, wilayahRes] = await Promise.all([
         getMustahikByMosque({ mosqueId: mosqueRes.data.id }),

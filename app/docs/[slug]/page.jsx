@@ -10,6 +10,7 @@ import ProgramSection from "@/components/docs/sections/ProgramSection";
 import DistribusiSection from "@/components/docs/sections/DistribusiSection";
 import ProfileSection from "@/components/docs/sections/ProfileSection";
 import KalkulatorSection from "@/components/docs/sections/KalkulatorSection";
+import DoaSection from "@/components/docs/sections/DoaSection";
 import KontribusiSection from "@/components/docs/sections/KontribusiSection";
 import DocsPageNav from "@/components/docs/DocsPageNav";
 
@@ -23,6 +24,7 @@ const SECTION_MAP = {
   "distribusi":         <DistribusiSection />,
   "profile":            <ProfileSection />,
   "kalkulator":         <KalkulatorSection />,
+  "doa": <DoaSection />,
   "kontribusi":         <KontribusiSection />,
 };
 

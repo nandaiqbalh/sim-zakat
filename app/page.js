@@ -18,6 +18,7 @@ import {
   Banknote,
   CalendarClock,
   ShieldCheck,
+  Heart,
 } from "lucide-react";
 
 export const metadata = {
@@ -99,6 +100,10 @@ export default async function LandingPage() {
             <Link href="/calculator/zakat-fitrah"
               className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-green-800 hover:bg-green-50 px-3 py-1.5 rounded-lg font-medium transition-colors">
               <Calculator className="w-3.5 h-3.5" /> Kalkulator
+            </Link>
+            <Link href="/doa"
+              className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-green-800 hover:bg-green-50 px-3 py-1.5 rounded-lg font-medium transition-colors">
+              <Heart className="w-3.5 h-3.5" /> Doa &amp; Niat
             </Link>
             <Link href="/docs"
               className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-green-800 hover:bg-green-50 px-3 py-1.5 rounded-lg font-medium transition-colors">
@@ -238,6 +243,10 @@ export default async function LandingPage() {
                   className="inline-flex items-center justify-center gap-2 bg-white border border-amber-200 hover:border-amber-400 text-amber-700 font-semibold px-5 py-2.5 rounded-xl transition text-sm">
                   📅 Kalkulator Fidyah
                 </Link>
+                <Link href="/doa"
+                  className="inline-flex items-center justify-center gap-2 bg-white border border-green-200 hover:border-green-400 text-green-700 font-semibold px-5 py-2.5 rounded-xl transition text-sm">
+                  🤲 Doa &amp; Niat
+                </Link>
               </div>
             </div>
             {/* Visual decoration */}
@@ -256,6 +265,30 @@ export default async function LandingPage() {
               ))}
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* ── Doa & Niat CTA ── */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-10">
+        <div className="bg-gradient-to-r from-green-50 via-emerald-50 to-teal-50 border border-green-100 rounded-3xl p-7 sm:p-9 flex flex-col sm:flex-row items-center gap-6">
+          <div className="shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-br from-green-700 to-emerald-600 flex items-center justify-center text-3xl shadow-lg">
+            🤲
+          </div>
+          <div className="flex-1 text-center sm:text-left">
+            <div className="inline-flex items-center gap-2 bg-green-100 text-green-800 text-xs font-semibold px-3 py-1 rounded-full mb-2">
+              <Heart className="w-3.5 h-3.5" /> Referensi Ibadah
+            </div>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">Niat &amp; Doa Zakat</h2>
+            <p className="text-sm text-gray-500 leading-relaxed">
+              Lafal niat zakat fitrah untuk diri sendiri, istri, anak, dan keluarga — lengkap dengan teks Arab, latin, dan terjemahan. Plus doa penerima zakat dan niat fidyah.
+            </p>
+          </div>
+          <Link
+            href="/doa"
+            className="shrink-0 inline-flex items-center gap-2 bg-green-700 hover:bg-green-800 text-white font-semibold px-6 py-3 rounded-xl transition text-sm shadow-lg"
+          >
+            Buka Doa &amp; Niat <ChevronRight className="w-4 h-4" />
+          </Link>
         </div>
       </section>
 
@@ -320,13 +353,13 @@ export default async function LandingPage() {
             </div>
             {/* Steps preview */}
             <div className="hidden lg:flex flex-col gap-2 shrink-0 w-52">
-              {["Login & Daftar", "Setup Masjid & Staff", "Catat Transaksi", "Program Distribusi", "Kalkulator Zakat"].map((s, i) => (
+              {["Login & Daftar", "Setup Masjid & Staff", "Catat Transaksi", "Program Distribusi", "Kalkulator & Doa Zakat"].map((s, i) => (
                 <div key={s} className="flex items-center gap-2.5 bg-white/5 border border-white/10 rounded-xl px-3 py-2">
                   <span className="w-5 h-5 rounded-full bg-green-700 text-white text-xs font-bold flex items-center justify-center shrink-0">{i + 1}</span>
                   <span className="text-xs text-gray-300">{s}</span>
                 </div>
               ))}
-              <p className="text-xs text-gray-500 text-center mt-1">dan 5 panduan lainnya →</p>
+              <p className="text-xs text-gray-500 text-center mt-1">dan 6 panduan lainnya →</p>
             </div>
           </div>
         </div>
@@ -351,6 +384,9 @@ export default async function LandingPage() {
               </Link>
               <Link href="/calculator/fidyah" className="flex items-center gap-1 hover:text-green-700 transition-colors">
                 <CalendarClock className="w-3 h-3" /> Fidyah
+              </Link>
+              <Link href="/doa" className="flex items-center gap-1 hover:text-green-700 transition-colors">
+                <Heart className="w-3 h-3" /> Doa &amp; Niat
               </Link>
               <Link href="/docs" className="flex items-center gap-1 hover:text-green-700 transition-colors">
                 <BookOpen className="w-3 h-3" /> Panduan
